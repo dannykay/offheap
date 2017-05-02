@@ -23,6 +23,7 @@ public class OffHeapBase implements Externalizable {
     private long numElements;
     private long elementSize;
     private boolean wasFreed = false;
+    private boolean isImutable=false;
     static {
 	Exception ex = null;
 	try {
@@ -37,8 +38,26 @@ public class OffHeapBase implements Externalizable {
 	}
     }
 
+    protected void makeImutable()
+    {
+	isImutable=true;
+    }
+    public final long getNumElements() {
+        return numElements;
+    }
+
+
+    public final long getElementSize() {
+        return elementSize;
+    }
+
     public class OffheapMemoryWasFreedException extends RuntimeException {
 	public OffheapMemoryWasFreedException() {
+	    super();
+	}
+    }
+    public class ClassIsImutableException extends RuntimeException {
+	public ClassIsImutableException() {
 	    super();
 	}
     }
@@ -54,7 +73,7 @@ public class OffHeapBase implements Externalizable {
     protected long address(long i) {
 	if (i < 0L || i >= this.numElements)
 	    throw new ArrayIndexOutOfBoundsException((int) i);
-	return address + i * numElements;
+	return address + i * elementSize;
     }
 
     private void init(long numElements, long elementSize)
@@ -132,4 +151,40 @@ public class OffHeapBase implements Externalizable {
 	}
 	logger.info("finished writing");
     }
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	for(long i=0;i<elementSize*numElements/4L;i++)
+	    result = prime * result + unsafe.getInt(address+i+4L);
+	return result;
+    }
+    /**
+     * Equal if both OffHeapBase objects have the same number of elements of the same elment size and all the bytes
+     * are equal.
+     */
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	OffHeapBase other = (OffHeapBase) obj;
+	if (this.numElements!=other.numElements)
+	    return false;
+	if (this.elementSize!=other.elementSize)
+	    return false;
+	long i;
+	for(i=0;i<elementSize*numElements;i++)
+	    if (this.unsafe.getByte(this.address+i) != other.unsafe.getByte(other.address+i))
+	    return false;
+	return true;
+    }
+
+
+    
+    
 }
