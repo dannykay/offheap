@@ -28,13 +28,18 @@ public class OffHeapPrimitiveArrayOfLong extends OffHeapBase implements Serializ
 
     public long get(long index) {
 	long value = getUnsafe().getLong(address(index));
-	logger.info("get[ "+index+"]="+String.format("0x%016X", value));
+	logger.debug("get[ "+index+"]="+String.format("0x%016X", value));
 	return value;
     }
 
     public long set(long index, long value) {
+	verifyMutable();
 	getUnsafe().putLong(address(index), value);
-	logger.info("write[ "+index+"]="+String.format("0x%016X", value));
+	logger.debug("write[ "+index+"]="+String.format("0x%016X", value));
 	return value;
+    }
+    public void makeImutable()
+    {
+	super.makeImutable();
     }
 }

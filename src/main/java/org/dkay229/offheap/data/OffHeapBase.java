@@ -4,8 +4,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import sun.misc.Unsafe;
 @SuppressWarnings({ "restriction", "serial" })
 public class OffHeapBase implements Externalizable {
     Logger logger = LoggerFactory.getLogger(OffHeapBase.class);
-
+    private static WeakHashMap<OffHeapBase,OffHeapBase> interns = new WeakHashMap<>();
     private static final Unsafe unsafe;
     private static final Exception unsafeException;
     private static final long WRITE_BUFFER_SIZE = 1024 * 50;
@@ -38,6 +38,30 @@ public class OffHeapBase implements Externalizable {
 	}
     }
 
+    protected static OffHeapBase intern(OffHeapBase o)
+    {
+	synchronized(interns)
+	{	
+	    OffHeapBase rtn=interns.get(o);
+	    if (rtn==null) {
+		interns.put(o, o);
+		return o;
+	    } else {
+		return rtn;
+	    }
+	}
+    }
+    public final boolean isImutable() {
+        return isImutable;
+    }
+    public void verifyMutable()
+    {
+	if (!isImutable)
+	    throw new IsImutableException();
+    }
+    public final void setImutable(boolean isImutable) {
+        this.isImutable = isImutable;
+    }
     protected void makeImutable()
     {
 	isImutable=true;
@@ -56,12 +80,16 @@ public class OffHeapBase implements Externalizable {
 	    super();
 	}
     }
-    public class ClassIsImutableException extends RuntimeException {
-	public ClassIsImutableException() {
+    public class IsImutableException extends RuntimeException {
+	public IsImutableException() {
 	    super();
 	}
     }
-
+    public class NotImutableException extends RuntimeException {
+	public NotImutableException() {
+	    super();
+	}
+    }
     protected Unsafe getUnsafe() {
 	if (unsafeException != null || unsafe == null)
 	    throw new RuntimeException(unsafeException);
