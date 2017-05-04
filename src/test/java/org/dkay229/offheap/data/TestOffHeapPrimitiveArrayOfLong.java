@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.dkay229.offheap.data.OffHeapBase.OffheapMemoryWasFreedException;
+import org.dkay229.offheap.data.OffHeapArray.OffheapMemoryWasFreedException;
 import org.junit.Test;
 
 public class TestOffHeapPrimitiveArrayOfLong {
@@ -106,7 +106,7 @@ public class TestOffHeapPrimitiveArrayOfLong {
     public void testNegEleSize() {
 	Exception ex = null;
 	try {
-	    OffHeapBase arr = new OffHeapBase(10,-1);
+	    OffHeapArray arr = new OffHeapArray(10,-1);
 	} catch (Exception e) {
 	    ex = e;
 	}
@@ -127,7 +127,7 @@ public class TestOffHeapPrimitiveArrayOfLong {
 	arr2.set(999L, 137L);
 	assertFalse("equals check",arr1.equals(arr2));
 	assertFalse("equals check",arr1.equals(new OffHeapPrimitiveArrayOfLong(1)));
-	assertFalse("equals check",new OffHeapBase(20L,4L).equals(new OffHeapBase(20L,8L)));
+	assertFalse("equals check",new OffHeapArray(20L,4L).equals(new OffHeapArray(20L,8L)));
     }
 
     

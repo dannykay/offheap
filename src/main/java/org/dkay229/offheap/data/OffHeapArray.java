@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import sun.misc.Unsafe;
 
 @SuppressWarnings({ "restriction", "serial" })
-public class OffHeapBase implements Externalizable {
-    Logger logger = LoggerFactory.getLogger(OffHeapBase.class);
-    private static WeakHashMap<OffHeapBase,OffHeapBase> interns = new WeakHashMap<>();
+public class OffHeapArray implements Externalizable {
+    Logger logger = LoggerFactory.getLogger(OffHeapArray.class);
+    private static WeakHashMap<OffHeapArray,OffHeapArray> interns = new WeakHashMap<>();
     private static final Unsafe unsafe;
     private static final Exception unsafeException;
     private static final long WRITE_BUFFER_SIZE = 1024 * 50;
@@ -38,11 +38,11 @@ public class OffHeapBase implements Externalizable {
 	}
     }
 
-    protected static OffHeapBase intern(OffHeapBase o)
+    protected static OffHeapArray intern(OffHeapArray o)
     {
 	synchronized(interns)
 	{	
-	    OffHeapBase rtn=interns.get(o);
+	    OffHeapArray rtn=interns.get(o);
 	    if (rtn==null) {
 		interns.put(o, o);
 		return o;
@@ -115,7 +115,7 @@ public class OffHeapBase implements Externalizable {
 	address = getUnsafe().allocateMemory(numElements * elementSize);
 	logger.info("OffHeapBase ctor completed for size " + numElements * elementSize + " for " + this);
     }
-    protected OffHeapBase(long numElements, long elementSize) {
+    protected OffHeapArray(long numElements, long elementSize) {
 	super();
 	init(numElements,elementSize);
     }
@@ -123,7 +123,7 @@ public class OffHeapBase implements Externalizable {
      * Only called during serialization
      */
     @SuppressWarnings("unused")
-    protected OffHeapBase() {
+    protected OffHeapArray() {
 	super();
 	logger.info("No arg constructor was called");
     }
@@ -200,7 +200,7 @@ public class OffHeapBase implements Externalizable {
 	    return false;
 	if (getClass() != obj.getClass())
 	    return false;
-	OffHeapBase other = (OffHeapBase) obj;
+	OffHeapArray other = (OffHeapArray) obj;
 	if (this.numElements!=other.numElements)
 	    return false;
 	if (this.elementSize!=other.elementSize)

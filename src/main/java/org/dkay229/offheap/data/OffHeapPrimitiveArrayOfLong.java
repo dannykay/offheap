@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @SuppressWarnings("restriction")
-public class OffHeapPrimitiveArrayOfLong extends OffHeapBase implements Serializable {
-    Logger logger = LoggerFactory.getLogger(OffHeapBase.class);
+public class OffHeapPrimitiveArrayOfLong extends OffHeapArray implements Serializable {
+    Logger logger = LoggerFactory.getLogger(OffHeapArray.class);
 
     public OffHeapPrimitiveArrayOfLong() {
 	super();
