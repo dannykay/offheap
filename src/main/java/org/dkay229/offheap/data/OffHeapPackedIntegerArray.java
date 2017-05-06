@@ -2,37 +2,32 @@ package org.dkay229.offheap.data;
 
 public class OffHeapPackedIntegerArray extends OffHeapArray {
     public static class PackedIntegerType {
-	private final int numberOfBits;
-	private final boolean isSigned;
-	private final long valueMask;
-	private final long signBitMask;
-	private final long maxValue=0L;
-	private final long minValue=0L;
-	
+	private PackedIntegerTypeData data = new PackedIntegerTypeData(0L, 0L);
+
 	public PackedIntegerType(int numberOfBits, boolean isSigned) {
 	    super();
-	    this.numberOfBits = numberOfBits;
-	    this.isSigned = isSigned;
-	    this.valueMask = 0xFFFFFFFFFFFFFFFFL >> 64-numberOfBits;
+	    this.data.numberOfBits = numberOfBits;
+	    this.data.isSigned = isSigned;
+	    this.data.valueMask = 0xFFFFFFFFFFFFFFFFL >> 64-numberOfBits;
 	    if (isSigned) {
-		signBitMask=1L<<numberOfBits-1;
+		data.signBitMask=1L<<numberOfBits-1;
 	    } else {
-		signBitMask=0L;
+		data.signBitMask=0L;
 	    }
 	}
 
 	public final int getNumberOfBits() {
-	    return numberOfBits;
+	    return data.numberOfBits;
 	}
 
 	public final boolean isSigned() {
-	    return isSigned;
+	    return data.isSigned;
 	}
 
 	public long pack(long value)
 	{
 	    long v=0L;
-	    v&=valueMask;
+	    v&=data.valueMask;
 	    return v;
 	}
 	public String getBitString(long v)
